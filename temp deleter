@@ -1,0 +1,44 @@
+using System;
+using System.IO;
+
+class TempFileDeleter
+{
+    static void Main(string[] args)
+    {
+        string tempPath = Path.GetTempPath();
+        try
+        {
+            // Get all temp files
+            var tempFiles = Directory.GetFiles(tempPath);
+            int deletedCount = 0;
+
+            foreach (var file in tempFiles)
+            {
+                try
+                {
+                    File.Delete(file);
+                    Console.WriteLine($"deleted: {file}");
+                    deletedCount++;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine($"access denied to {file}. Skipping.");
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"I/O error while deleting {file}: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"could not delete {file}: {ex.Message}");
+                }
+            }
+
+            Console.WriteLine($"temporary files deletion completed. Total deleted: {deletedCount}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"error accessing temp directory: {ex.Message}");
+        }
+    }
+}
